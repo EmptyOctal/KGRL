@@ -163,3 +163,5 @@ cython_debug/
 
 dataset/
 logs/
+check.py
+test.py
