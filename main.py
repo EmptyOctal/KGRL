@@ -17,7 +17,6 @@ def train(args):
                        margin=args.margin,
                        lr=args.lr)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(device)
     model.to(device)
     # 检查点保存和日志记录
     checkpoint_callback = ModelCheckpoint(monitor="val_loss", mode="min", save_top_k=1)
@@ -50,7 +49,7 @@ def predict(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_path', type=str, default='dataset/subgraph_kgp1.txt')
+    parser.add_argument('--data_path', type=str, default='dataset/test1_demo.txt')
     parser.add_argument('--batch_size', type=int, default=128)
     parser.add_argument('--embedding_dim', type=int, default=100)
     parser.add_argument('--margin', type=float, default=1.0)

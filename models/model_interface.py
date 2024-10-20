@@ -21,14 +21,14 @@ class MInterface(LightningModule):
         neg_score = self.model(neg_head, relation, tail)
 
         loss = self.model.loss_function(pos_score, neg_score)
-        self.log('train_loss', loss)
+        self.log('train_loss', loss, on_epoch=True, prog_bar=True)
 
         return loss
 
     def validation_step(self, batch, batch_idx):
         head, relation, tail = batch
         pos_score = self.model(head, relation, tail)
-        self.log('val_loss', pos_score.mean())
+        self.log('val_loss', pos_score.mean(), on_epoch=True, prog_bar=True)
 
     def configure_optimizers(self):
         return optim.Adam(self.parameters(), lr=self.lr)
