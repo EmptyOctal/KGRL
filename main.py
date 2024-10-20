@@ -108,12 +108,13 @@ if __name__ == '__main__':
     parser.add_argument('--lr', type=float, default=0.001)
     parser.add_argument('--max_epochs', type=int, default=100)
     parser.add_argument('--model_checkpoint', type=str, default=None)
-    parser.add_argument('--valid_json', type=str, required=False)
-    parser.add_argument('--output_json', type=str, required=False)
+    parser.add_argument('--valid_json', type=str, default='dataset/subgraph_kgp1_valid.json')
+    parser.add_argument('--output_json', type=str, default='dataset/subgraph_kgp1_output.json')
     parser.add_argument('--is_train', action='store_true')
 
     args = parser.parse_args()
-    if args.is_train:
-        train(args)
-    else:
-        predict(args)
+    train(args)
+    # if args.is_train:
+    #     train(args)
+    # else:
+    #     predict(args)

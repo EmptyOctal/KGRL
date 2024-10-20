@@ -1,6 +1,6 @@
 import json
 # 你们修改了Output的结果
-eval_path = "dataset/subgraph_kgp1_valid.json"
+eval_path = "dataset/subgraph_kgp1_output.json"
 # 不需要修改
 ground_truth_path = "dataset/subgraph_kgp1_valid.json"
 
