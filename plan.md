@@ -21,4 +21,5 @@ mTransE 论文：
 https://arxiv.org/pdf/1611.03954v3
 
 https://zhuanlan.zhihu.com/p/256436217
+https://blog.csdn.net/m0_51974705/article/details/137123778
 
