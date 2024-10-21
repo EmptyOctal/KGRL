@@ -14,7 +14,9 @@ import wandb
 
 def train(args):
     data_dir = "dataset/processed/"
-    data_module = DInterface(data_path=data_dir, batch_size=args.batch_size, num_workers=args.num_workers)
+    data_module = DInterface(data_path=data_dir, 
+                             batch_size=args.batch_size, 
+                             num_workers=args.num_workers)
     data_module.setup(stage='fit')
 
     model = MInterface(num_entities=data_module.num_entities,
@@ -29,7 +31,7 @@ def train(args):
     checkpoint_callback = ModelCheckpoint(monitor="val_loss", mode="min", save_top_k=1)
     early_stopping_callback = EarlyStopping(monitor="val_loss", patience=5, mode="min")
     # logger = CSVLogger("logs", name="transE")
-    wandb.init(project='KGRL', entity='octal-zhihao-zhou')
+    wandb.init(project='KGRL')
     # 创建 WandbLogger
     wandb_logger = WandbLogger()
     trainer = Trainer(max_epochs=args.max_epochs, 
@@ -214,10 +216,10 @@ if __name__ == '__main__':
         os.makedirs(processed_dir)
         process_data(args.data_path, processed_dir)
     # 训练
-    # train(args)
+    train(args)
 
     # 预测
-    predict(args)
+    # predict(args)
     # if args.is_train:
     #     train(args)
     # else:
