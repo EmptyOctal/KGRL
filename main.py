@@ -70,7 +70,7 @@ def predict_demo(args):
         scores = []
         for relation, relation_id in relation2id.items():
             relation_tensor = torch.tensor([relation_id], dtype=torch.long).to(model.device)
-            score = model(head_id, relation_id, tail_id).item()
+            score = model(head_tensor, relation_tensor, tail_tensor).item()
             scores.append((relation, score))
         
         # 按分数排序并取前五个
@@ -211,7 +211,7 @@ if __name__ == '__main__':
     parser.add_argument('--margin', type=float, default=1.0)
     parser.add_argument('--lr', type=float, default=0.0001)
     parser.add_argument('--max_epochs', type=int, default=100)
-    parser.add_argument('--model_checkpoint', type=str, default='lightning_logs/4mlxx40f/checkpoints/epoch=13-step=22428.ckpt')
+    parser.add_argument('--model_checkpoint', type=str, default='lightning_logs/4ouqnnf0/checkpoints/epoch=18-step=30438.ckpt')
     parser.add_argument('--valid_json', type=str, default='dataset/subgraph_kgp1_valid.json')
     parser.add_argument('--output_json', type=str, default='dataset/subgraph_kgp1_output.json')
     parser.add_argument('--num_workers', type=int, default=8)
@@ -228,7 +228,8 @@ if __name__ == '__main__':
     # train(args)
 
     # 预测
-    predict_demo(args)
+    while True:
+        predict_demo(args)
     # if args.is_train:
     #     train(args)
     # else:
