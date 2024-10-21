@@ -30,4 +30,4 @@ class TransE(nn.Module):
 
     def loss_function(self, positive_score, negative_score):
         # 基于margin的排名损失函数
-        return F.relu(positive_score - negative_score + self.margin).mean()
+        return torch.sum(F.relu(positive_score - negative_score + self.margin))
