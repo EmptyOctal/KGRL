@@ -27,6 +27,9 @@ class TransH(nn.Module):
         tail_emb = self.entity_embeddings(tail)
         normal_vector = self.normal_vector_embeddings(relation)
 
+        # 法向量归一化
+        normal_vector = F.normalize(normal_vector, p=2, dim=1)
+
         # 投影到超平面
         head_proj = self.project_to_hyperplane(head_emb, normal_vector)
         tail_proj = self.project_to_hyperplane(tail_emb, normal_vector)
@@ -37,6 +40,7 @@ class TransH(nn.Module):
 
     def project_to_hyperplane(self, entity_emb, normal_vector):
         # 将实体投影到法向量定义的超平面上
+        # 投影公式：e' = e - (e · w) * w
         return entity_emb - torch.sum(entity_emb * normal_vector, dim=1, keepdim=True) * normal_vector
 
     def loss_function(self, positive_score, negative_score):
