@@ -1,5 +1,8 @@
 import codecs
 
+# 创建一个全局三元组 set
+triplet_set = set()
+
 def load_train_data(file_path):
     train_file = file_path + "train.txt"
     entity2id_file = file_path + "entity2id.txt"
@@ -40,6 +43,7 @@ def load_train_data(file_path):
 
             if h_ is not None and t_ is not None and r_ is not None:
                 triple_list.append(triple)  # 储存三元组的编号
+                triplet_set.add((h_, r_, t_))  # 将三元组的id加入全局set
 
     return triple_list, entity2id, relation2id
 
@@ -84,6 +88,7 @@ def load_test_data(file_path):
 
             if h_ is not None and t_ is not None and r_ is not None:
                 triple_list.append(triple)  # 储存三元组的编号
+                triplet_set.add((h_, r_, t_))  # 将三元组的id加入全局set
 
 
     return triple_list, entity2id, relation2id

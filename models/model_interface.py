@@ -1,6 +1,7 @@
 from pytorch_lightning import LightningModule
 import torch
 import torch.optim as optim
+from utils.load import triplet_set
 from .transE_model import TransE
 from .transH_model import TransH
 from .transR_model import TransR
@@ -36,18 +37,21 @@ class MInterface(LightningModule):
                 neg_head = torch.randint(0, self.num_entities, head.shape, device=self.device)
                 flag = True
                 for i in range(len(head)):
-                    if head[i] == neg_head[i]:
+                    if (neg_head[i].item(), relation[i].item(), neg_tail[i].item()) in triplet_set:
                         flag = False
+                        break
                 if flag:
                     break
+                    
         else:
             neg_head = head
             while True:
                 neg_tail = torch.randint(0, self.num_entities, tail.shape, device=self.device)
                 flag = True
-                for i in range(len(tail)):
-                    if tail[i] == neg_tail[i]:
+                for i in range(len(head)):
+                    if (neg_head[i].item(), relation[i].item(), neg_tail[i].item()) in triplet_set:
                         flag = False
+                        break
                 if flag:
                     break
                 
