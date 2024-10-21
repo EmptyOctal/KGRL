@@ -36,8 +36,8 @@ class MInterface(LightningModule):
                 if not torch.equal(tail, neg_tail):
                     break
 
-        pos_score = self.model(head, relation, tail)
-        neg_score = self.model(neg_head, relation, neg_tail)
+        pos_score = self(head, relation, tail)
+        neg_score = self(neg_head, relation, neg_tail)
 
         loss = self.model.loss_function(pos_score, neg_score)
         self.log('train_loss', loss, on_epoch=True, prog_bar=True)
@@ -46,7 +46,7 @@ class MInterface(LightningModule):
 
     def validation_step(self, batch, batch_idx):
         head, relation, tail = batch
-        pos_score = self.model(head, relation, tail)
+        pos_score = self(head, relation, tail)
         self.log('val_loss', pos_score.mean(), on_epoch=True, prog_bar=True)
 
     def configure_optimizers(self):

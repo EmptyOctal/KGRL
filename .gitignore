@@ -163,5 +163,7 @@ cython_debug/
 
 dataset/
 logs/
+wandb/
+KGRL/
 check.py
 test.py
