@@ -23,19 +23,28 @@ class MInterface(LightningModule):
 
     def training_step(self, batch, batch_idx):
         head, relation, tail = batch
+        
         if torch.rand(1).item() > 0.5:
+            neg_tail = tail
             while True:
                 neg_head = torch.randint(0, self.num_entities, head.shape, device=self.device)
-                if not torch.equal(head, neg_head):
+                flag = True
+                for i in range(len(head)):
+                    if head[i] == neg_head[i]:
+                        flag = False
+                if flag:
                     break
-            neg_tail = tail
         else:
             neg_head = head
             while True:
                 neg_tail = torch.randint(0, self.num_entities, tail.shape, device=self.device)
-                if not torch.equal(tail, neg_tail):
+                flag = True
+                for i in range(len(tail)):
+                    if tail[i] == neg_tail[i]:
+                        flag = False
+                if flag:
                     break
-
+                
         pos_score = self(head, relation, tail)
         neg_score = self(neg_head, relation, neg_tail)
 
