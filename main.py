@@ -29,7 +29,7 @@ def train(args):
     checkpoint_callback = ModelCheckpoint(monitor="val_loss", mode="min", save_top_k=1)
     early_stopping_callback = EarlyStopping(monitor="val_loss", patience=5, mode="min")
     # logger = CSVLogger("logs", name="transE")
-    wandb.init(project='KGRL', entity='octal-zhihao-zhou')
+    wandb.init(project='KGRL')
     # 创建 WandbLogger
     wandb_logger = WandbLogger()
     trainer = Trainer(max_epochs=args.max_epochs, 
