@@ -38,7 +38,7 @@ def train(args):
     # 创建 WandbLogger
     wandb_logger = WandbLogger()
     trainer = Trainer(max_epochs=args.max_epochs, 
-                        callbacks=[checkpoint_callback], 
+                        callbacks=[checkpoint_callback, early_stopping_callback], 
                         logger=wandb_logger)
     trainer.fit(model, data_module)
 
@@ -218,7 +218,7 @@ if __name__ == '__main__':
     parser.add_argument('--margin', type=float, default=1.0)
     parser.add_argument('--lr', type=float, default=0.0001)
     parser.add_argument('--max_epochs', type=int, default=100)
-    parser.add_argument('--model_checkpoint', type=str, default='lightning_logs/6lf63jco/checkpoints/epoch=35-step=42840.ckpt')
+    parser.add_argument('--model_checkpoint', type=str, default='lightning_logs/nzqohl8k/checkpoints/epoch=35-step=14436.ckpt')
     parser.add_argument('--valid_json', type=str, default='dataset/subgraph_kgp1_valid.json')
     parser.add_argument('--output_json', type=str, default='dataset/subgraph_kgp1_output.json')
     parser.add_argument('--num_workers', type=int, default=32)
