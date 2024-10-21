@@ -216,7 +216,7 @@ if __name__ == '__main__':
     parser.add_argument('--output_json', type=str, default='dataset/subgraph_kgp1_output.json')
     parser.add_argument('--num_workers', type=int, default=16)
     parser.add_argument('mode', type=str, default='train', choices=['train', 'predict', 'predict_demo'])
-    parser.add_argument('--model_name', type=str, default='transH', choices=['transE', 'transR'])
+    parser.add_argument('--model_name', type=str, default='transH', choices=['transE', 'transH', 'transR'])
 
     args = parser.parse_args()
     # 加工数据
