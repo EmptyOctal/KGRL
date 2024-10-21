@@ -29,11 +29,11 @@ def train(args):
     checkpoint_callback = ModelCheckpoint(monitor="val_loss", mode="min", save_top_k=1)
     early_stopping_callback = EarlyStopping(monitor="val_loss", patience=5, mode="min")
     # logger = CSVLogger("logs", name="transE")
-    wandb.init(project='KGRL')
+    wandb.init(project='KGRL', config=args)
     # 创建 WandbLogger
     wandb_logger = WandbLogger()
     trainer = Trainer(max_epochs=args.max_epochs, 
-                        callbacks=[checkpoint_callback, early_stopping_callback], 
+                        callbacks=[checkpoint_callback], 
                         logger=wandb_logger)
     trainer.fit(model, data_module)
 
@@ -204,17 +204,17 @@ def predict(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type=str, default='dataset/raw/subgraph_kgp1.txt')
-    parser.add_argument('--batch_size', type=int, default=256)
+    parser.add_argument('--batch_size', type=int, default=512)
     parser.add_argument('--embedding_dim', type=int, default=100)
     parser.add_argument('--entity_dim', type=int, default=100, help='Dimension of entity embeddings for TransR')
     parser.add_argument('--relation_dim', type=int, default=50, help='Dimension of relation embeddings for TransR')
     parser.add_argument('--margin', type=float, default=1.0)
     parser.add_argument('--lr', type=float, default=0.0001)
     parser.add_argument('--max_epochs', type=int, default=100)
-    parser.add_argument('--model_checkpoint', type=str, default='lightning_logs/4ouqnnf0/checkpoints/epoch=18-step=30438.ckpt')
+    parser.add_argument('--model_checkpoint', type=str, default='lightning_logs/uwsbp9x5/checkpoints/epoch=15-step=12816.ckpt')
     parser.add_argument('--valid_json', type=str, default='dataset/subgraph_kgp1_valid.json')
     parser.add_argument('--output_json', type=str, default='dataset/subgraph_kgp1_output.json')
-    parser.add_argument('--num_workers', type=int, default=8)
+    parser.add_argument('--num_workers', type=int, default=16)
     parser.add_argument('--is_train', action='store_true')
     parser.add_argument('--model_name', type=str, default='transH', choices=['transE', 'transR'])
 
@@ -225,11 +225,12 @@ if __name__ == '__main__':
         os.makedirs(processed_dir)
         process_data(args.data_path, processed_dir)
     # 训练
-    # train(args)
+    train(args)
 
+    # predict(args)
     # 预测
-    while True:
-        predict_demo(args)
+    # while True:
+    #     predict_demo(args)
     # if args.is_train:
     #     train(args)
     # else:
