@@ -3,7 +3,7 @@ import argparse
 import torch
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
-from pytorch_lightning.loggers import CSVLogger
+from pytorch_lightning.loggers import CSVLogger, WandbLogger
 from data.data_interface import DInterface
 from models.model_interface import MInterface
 from utils.process import process_data
@@ -17,14 +17,15 @@ def train(args):
                        num_relations=data_module.num_relations,
                        embedding_dim=args.embedding_dim,
                        margin=args.margin,
-                       lr=args.lr)
+                       lr=args.lr,
+                       model_name=args.model_name)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
     checkpoint_callback = ModelCheckpoint(monitor="val_loss", mode="min", save_top_k=1)
     early_stopping_callback = EarlyStopping(monitor="val_loss", patience=5, mode="min")
-    logger = CSVLogger("logs", name="transE")
-
+    # logger = CSVLogger("logs", name="transE")
+    logger = WandbLogger(project="KGRL", name="transE")
     trainer = Trainer(max_epochs=args.max_epochs, 
                         callbacks=[checkpoint_callback, early_stopping_callback], 
                         logger=logger)
@@ -44,10 +45,11 @@ if __name__ == '__main__':
     parser.add_argument('--output_json', type=str, default='dataset/subgraph_kgp1_output.json')
     parser.add_argument('--num_workers', type=int, default=4)
     parser.add_argument('--is_train', action='store_true')
+    parser.add_argument('--model_name', type=str, default='transE', choices=['transE', 'transR'])
 
     args = parser.parse_args()
     # 加工数据
-    processed_dir = 'dataset/processed'
+    processed_dir = 'dataset/processed/'
     if not os.path.exists(processed_dir):
         os.makedirs(processed_dir)
         process_data(args.data_path, processed_dir)

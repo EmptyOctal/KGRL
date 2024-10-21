@@ -1,12 +1,20 @@
 from pytorch_lightning import LightningModule
 import torch
 import torch.optim as optim
-from .transE_model import TransEModel
+from .transE_model import TransE
+from .transR_model import TransR
 
 class MInterface(LightningModule):
-    def __init__(self, num_entities, num_relations, embedding_dim, margin, lr):
+    def __init__(self, num_entities, num_relations, embedding_dim, margin, lr, model_name='transE'):
         super(MInterface, self).__init__()
-        self.model = TransEModel(num_entities, num_relations, embedding_dim, margin)
+        
+        if model_name == 'transE':
+            self.model = TransE(num_entities, num_relations, embedding_dim, margin)
+        elif model_name == 'transR':
+            self.model = TransR(num_entities, num_relations, embedding_dim, margin)
+        else:
+            raise ValueError(f"Unsupported model_name: {model_name}")
+        
         self.lr = lr
         self.num_entities = num_entities
 

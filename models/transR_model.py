@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class TransE(nn.Module):
+class TransR(nn.Module):
     def __init__(self, num_entities, num_relations, embedding_dim, margin, p_norm=1):
-        super(TransE, self).__init__()
+        super(TransR, self).__init__()
         self.num_entities = num_entities
         self.num_relations = num_relations
         self.embedding_dim = embedding_dim
