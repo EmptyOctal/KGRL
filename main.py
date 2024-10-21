@@ -29,7 +29,7 @@ def train(args):
     checkpoint_callback = ModelCheckpoint(monitor="val_loss", mode="min", save_top_k=1)
     early_stopping_callback = EarlyStopping(monitor="val_loss", patience=5, mode="min")
     # logger = CSVLogger("logs", name="transE")
-    wandb.init(project='KGRL')
+    wandb.init(project='KGRL', config=args)
     # 创建 WandbLogger
     wandb_logger = WandbLogger()
     trainer = Trainer(max_epochs=args.max_epochs, 
@@ -216,7 +216,11 @@ if __name__ == '__main__':
     parser.add_argument('--output_json', type=str, default='dataset/subgraph_kgp1_output.json')
     parser.add_argument('--num_workers', type=int, default=8)
     parser.add_argument('--is_train', action='store_true')
+<<<<<<< HEAD
     parser.add_argument('--model_name', type=str, default='transH', choices=['transE', 'transR'])
+=======
+    parser.add_argument('--model_name', type=str, default='transH', choices=['transE', 'transH', 'transR'])
+>>>>>>> 81e765c (fix: update main)
 
     args = parser.parse_args()
     # 加工数据
@@ -225,11 +229,11 @@ if __name__ == '__main__':
         os.makedirs(processed_dir)
         process_data(args.data_path, processed_dir)
     # 训练
-    # train(args)
+    train(args)
 
     # 预测
-    while True:
-        predict_demo(args)
+    # while True:
+    #     predict_demo(args)
     # if args.is_train:
     #     train(args)
     # else:
