@@ -46,8 +46,26 @@ class MInterface(LightningModule):
 
     def validation_step(self, batch, batch_idx):
         head, relation, tail = batch
+        if torch.rand(1).item() > 0.5:
+            while True:
+                neg_head = torch.randint(0, self.num_entities, head.shape, device=self.device)
+                if not torch.equal(head, neg_head):
+                    break
+            neg_tail = tail
+        else:
+            neg_head = head
+            while True:
+                neg_tail = torch.randint(0, self.num_entities, tail.shape, device=self.device)
+                if not torch.equal(tail, neg_tail):
+                    break
+
         pos_score = self(head, relation, tail)
-        self.log('val_loss', pos_score.mean(), on_epoch=True, prog_bar=True)
+        neg_score = self(neg_head, relation, neg_tail)
+
+        loss = self.model.loss_function(pos_score, neg_score)
+        self.log('val_loss', loss, on_epoch=True, prog_bar=True)
+
+        return loss
 
     def configure_optimizers(self):
         return optim.Adam(self.parameters(), lr=self.lr)

@@ -164,6 +164,6 @@ cython_debug/
 dataset/
 logs/
 wandb/
-KGRL/
+lightning_logs/
 check.py
 test.py
