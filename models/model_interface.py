@@ -1,6 +1,7 @@
 from pytorch_lightning import LightningModule
 import torch
 import torch.optim as optim
+import numpy as np
 from utils.load import triplet_set
 from .transE_model import TransE
 from .transH_model import TransH
@@ -65,6 +66,7 @@ class MInterface(LightningModule):
 
     def validation_step(self, batch, batch_idx):
         head, relation, tail = batch
+        # 生成负样本
         if torch.rand(1).item() > 0.5:
             while True:
                 neg_head = torch.randint(0, self.num_entities, head.shape, device=self.device)
@@ -83,8 +85,9 @@ class MInterface(LightningModule):
 
         loss = self.model.loss_function(pos_score, neg_score)
         self.log('val_loss', loss, on_epoch=True, prog_bar=True)
-
         return loss
+
+        
 
     def configure_optimizers(self):
         return optim.Adam(self.parameters(), lr=self.lr)

@@ -7,19 +7,24 @@ from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from pytorch_lightning.loggers import CSVLogger, WandbLogger
 from data.data_interface import DInterface
 from models.model_interface import MInterface
-from utils.process import process_data
+from utils.process import process_data, aug_data
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 import wandb
 
 def train(args):
-    data_dir = "dataset/processed/"
+    if args.augment:
+        data_dir = 'dataset/augmented/'
+    else:
+        data_dir = 'dataset/processed/'
     data_module = DInterface(data_path=data_dir, batch_size=args.batch_size, num_workers=args.num_workers)
     data_module.setup(stage='fit')
 
     model = MInterface(num_entities=data_module.num_entities,
                        num_relations=data_module.num_relations,
                        embedding_dim=args.embedding_dim,
+                       entity_dim=args.entity_dim,
+                       relation_dim=args.relation_dim,
                        margin=args.margin,
                        lr=args.lr,
                        model_name=args.model_name)
@@ -27,7 +32,7 @@ def train(args):
     model.to(device)
 
     checkpoint_callback = ModelCheckpoint(monitor="val_loss", mode="min", save_top_k=1)
-    early_stopping_callback = EarlyStopping(monitor="val_loss", patience=5, mode="min")
+    early_stopping_callback = EarlyStopping(monitor="val_loss", patience=10, mode="min")
     # logger = CSVLogger("logs", name="transE")
     wandb.init(project='KGRL', config=args)
     # 创建 WandbLogger
@@ -46,6 +51,8 @@ def predict_demo(args):
                                             num_entities=data_module.num_entities,
                                             num_relations=data_module.num_relations,
                                             embedding_dim=args.embedding_dim,
+                                            entity_dim=args.entity_dim,
+                                            relation_dim=args.relation_dim,
                                             margin=args.margin,
                                             lr=args.lr,
                                             model_name=args.model_name)
@@ -55,7 +62,6 @@ def predict_demo(args):
     entity2id = data_module.entity2id
     relation2id = data_module.relation2id
     id2entity = {v: k for k, v in entity2id.items()}
-    id2relation = {v: k for k, v in relation2id.items()}
 
     head = input("请输入头实体: ")
     tail_or_relation = input("请输入尾实体或关系: ")
@@ -121,6 +127,8 @@ def predict(args):
                                             num_entities=data_module.num_entities,
                                             num_relations=data_module.num_relations,
                                             embedding_dim=args.embedding_dim,
+                                            entity_dim=args.entity_dim,
+                                            relation_dim=args.relation_dim,
                                             margin=args.margin,
                                             lr=args.lr,
                                             model_name=args.model_name)
@@ -130,13 +138,12 @@ def predict(args):
     entity2id = data_module.entity2id
     relation2id = data_module.relation2id
     id2entity = {v: k for k, v in entity2id.items()}
-    id2relation = {v: k for k, v in relation2id.items()}
 
     # 读取 valid_json 文件
     with open(args.valid_json, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
-    # 处理 link_prediction 任务，使用进度条
+    # 处理 link_prediction 任务
     print("Processing link prediction tasks...")
     for task in tqdm(data["link_prediction"], desc="Link Prediction"):
         head, tail = task["input"]
@@ -157,6 +164,7 @@ def predict(args):
             task["output"] = [relation for relation, _ in top_5_relations]
 
     # 处理 entity_prediction 任务，使用批量计算
+    print("Processing entity prediction tasks...")
     def process_entity_prediction_batch(task, batch_size=1024):
         head, relation = task["input"]
         if head in entity2id and relation in relation2id:
@@ -185,7 +193,6 @@ def predict(args):
             task["output"] = [id2entity[entity_id] for entity_id, _ in top_5_entities]
         return task
 
-    print("Processing entity prediction tasks...")
     with ThreadPoolExecutor(max_workers=args.num_workers) as executor:
         # 使用多线程 + 批量计算的方式执行 entity_prediction 部分
         results = list(tqdm(executor.map(process_entity_prediction_batch, data["entity_prediction"]),
@@ -204,19 +211,20 @@ def predict(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type=str, default='dataset/raw/subgraph_kgp1.txt')
-    parser.add_argument('--batch_size', type=int, default=512)
+    parser.add_argument('--batch_size', type=int, default=1024)
     parser.add_argument('--embedding_dim', type=int, default=100)
     parser.add_argument('--entity_dim', type=int, default=100) # 实体空间
     parser.add_argument('--relation_dim', type=int, default=50) # 关系空间
     parser.add_argument('--margin', type=float, default=1.0)
     parser.add_argument('--lr', type=float, default=0.0001)
     parser.add_argument('--max_epochs', type=int, default=100)
-    parser.add_argument('--model_checkpoint', type=str, default='lightning_logs/uwsbp9x5/checkpoints/epoch=15-step=12816.ckpt')
+    parser.add_argument('--model_checkpoint', type=str, default='lightning_logs/6lf63jco/checkpoints/epoch=35-step=42840.ckpt')
     parser.add_argument('--valid_json', type=str, default='dataset/subgraph_kgp1_valid.json')
     parser.add_argument('--output_json', type=str, default='dataset/subgraph_kgp1_output.json')
-    parser.add_argument('--num_workers', type=int, default=16)
-    parser.add_argument('mode', type=str, default='train', choices=['train', 'predict', 'predict_demo'])
-    parser.add_argument('--model_name', type=str, default='transH', choices=['transE', 'transH', 'transR'])
+    parser.add_argument('--num_workers', type=int, default=32)
+    parser.add_argument('--mode', type=str, default='train', choices=['train', 'predict', 'predict_demo'])
+    parser.add_argument('--model_name', type=str, default='transH', choices=['transE', 'transR'])
+    parser.add_argument('--augment', type=bool, default=False)
 
     args = parser.parse_args()
     # 加工数据
@@ -224,7 +232,13 @@ if __name__ == '__main__':
     if not os.path.exists(processed_dir):
         os.makedirs(processed_dir)
         process_data(args.data_path, processed_dir)
-   
+    
+    if args.augment:
+        aug_data_dir = 'dataset/augmented/'
+        if not os.path.exists(aug_data_dir):
+            os.makedirs(aug_data_dir)
+            aug_data(args.data_path, aug_data_dir)
+
     if args.mode == 'train':
         train(args)
     elif args.mode == 'predict':
