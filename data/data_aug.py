@@ -66,14 +66,5 @@ def data_ag(triple_list):
     return augmented_triples
 
 
-# # 示例调用
-# original_triple_list = [
-#     ['大力水手', 'RelatedTo', '卡通'],
-#     ['聊天', 'MotivatedByGoal', '泡茶'],
-#     ['无知', 'MotivatedByGoal', '书念不够'],
-#     ['人心果', 'dbpedia/genus', '铁线子属'],
-#     ['老人', 'NotDesires', '爆炸']
-# ]
-# augmenter = DAugmenter()
-# augmented_triples = augmenter.augment_data(original_triple_list)
+
 

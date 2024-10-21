@@ -206,8 +206,8 @@ if __name__ == '__main__':
     parser.add_argument('--data_path', type=str, default='dataset/raw/subgraph_kgp1.txt')
     parser.add_argument('--batch_size', type=int, default=512)
     parser.add_argument('--embedding_dim', type=int, default=100)
-    parser.add_argument('--entity_dim', type=int, default=100, help='Dimension of entity embeddings for TransR')
-    parser.add_argument('--relation_dim', type=int, default=50, help='Dimension of relation embeddings for TransR')
+    parser.add_argument('--entity_dim', type=int, default=100) # 实体空间
+    parser.add_argument('--relation_dim', type=int, default=50) # 关系空间
     parser.add_argument('--margin', type=float, default=1.0)
     parser.add_argument('--lr', type=float, default=0.0001)
     parser.add_argument('--max_epochs', type=int, default=100)
@@ -215,7 +215,7 @@ if __name__ == '__main__':
     parser.add_argument('--valid_json', type=str, default='dataset/subgraph_kgp1_valid.json')
     parser.add_argument('--output_json', type=str, default='dataset/subgraph_kgp1_output.json')
     parser.add_argument('--num_workers', type=int, default=16)
-    parser.add_argument('--is_train', action='store_true')
+    parser.add_argument('mode', type=str, default='train', choices=['train', 'predict', 'predict_demo'])
     parser.add_argument('--model_name', type=str, default='transH', choices=['transE', 'transR'])
 
     args = parser.parse_args()
@@ -224,14 +224,11 @@ if __name__ == '__main__':
     if not os.path.exists(processed_dir):
         os.makedirs(processed_dir)
         process_data(args.data_path, processed_dir)
-    # 训练
-    train(args)
-
-    # predict(args)
-    # 预测
-    # while True:
-    #     predict_demo(args)
-    # if args.is_train:
-    #     train(args)
-    # else:
-    #     predict(args)
+   
+    if args.mode == 'train':
+        train(args)
+    elif args.mode == 'predict':
+        predict(args)
+    elif args.mode == 'predict_demo':
+        while True:
+            predict_demo(args)
