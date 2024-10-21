@@ -2,6 +2,7 @@ from pytorch_lightning import LightningModule
 import torch
 import torch.optim as optim
 from .transE_model import TransE
+from .transH_model import TransH
 from .transR_model import TransR
 
 class MInterface(LightningModule):
@@ -10,6 +11,8 @@ class MInterface(LightningModule):
         
         if model_name == 'transE':
             self.model = TransE(num_entities, num_relations, embedding_dim, margin)
+        elif model_name == 'transH':
+            self.model = TransH(num_entities, num_relations, embedding_dim, margin)
         elif model_name == 'transR':
             self.model = TransR(num_entities, num_relations, embedding_dim, margin)
         else:
