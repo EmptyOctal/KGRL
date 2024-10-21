@@ -1,5 +1,7 @@
 # KGRL: 知识图谱表示学习
 
+[github仓库地址](https://github.com/EmptyOctal/KGRL)
+
 KGRL 是一个基于 PyTorch Lightning 的知识图谱表示学习框架，支持 TransE、TransH、TransR 等多种模型。本项目提供了模块化的结构，便于研究不同的知识图谱嵌入方法，并进行链路预测（Link Prediction）和实体预测（Entity Prediction）等任务。
 
 ## 项目优势
@@ -8,7 +10,7 @@ KGRL 是一个基于 PyTorch Lightning 的知识图谱表示学习框架，支�
 - **任务支持**：包括链路预测和实体预测任务。
 
 
-项目结构：
+## 项目结构：
 ```bash
 KGRL/
 ├── data/   # 数据集处理相关代码
@@ -37,28 +39,43 @@ KGRL/
 │   ├── load.py  # 加载数据
 │   └── process.py # 提取数据
 ├── main.py
+├── requirements.txt # 项目环境依赖
 └── README.md
 ```
 
 ## 使用方法
 
-1. 环境依赖
+### 1. 克隆项目
+首先，使用以下命令将项目克隆到本地：
+```bash
+git clone git@github.com:EmptyOctal/KGRL.git
+cd KGRL
+```
+
+### 2. 环境依赖
 首先，安装所需的Python依赖。可以通过以下命令安装：
 
 ```bash
 pip install -r requirements.txt
 ```
+或自行使用包管理工具安装如下包：
+- torch>=2.0
+- pytorch-lightning>=2.0
+- numpy>=1.21
+- pandas>=1.3
+- tqdm>=4.62
 
-2. 数据准备
+### 3. 数据准备
 将知识图谱数据文件放置于 data/raw/ 文件夹中。本项目支持以 .txt 格式存储的三元组数据，示例数据为subgraph_kgp1.txt。
 运行代码后，会自动在 data/processed/ 目录下生成经过提取和数据增强后形成的txt文件，新生成的文件每一行表示一个`实体-关系-实体`的三元组关系。
 
-3. 训练模型
+### 4. 训练模型
 使用以下命令训练模型：
 ```bash
 python main.py --mode train --model TransE --data_path ./data/subgraph_kgp1.txt --epochs 100
 ```
-4. 模型测试
+
+### 5. 模型测试
 训练完成后，使用以下命令进行测试和预测：
 ```bash
 python main.py --mode predict --model_checkpoint /path/to/model_checkpoint/
@@ -69,10 +86,8 @@ python main.py --mode predict --model_checkpoint /path/to/model_checkpoint/
 ```bash
 python eval_script.py
 ```
-扩展与自定义
-你可以根据需要扩展现有模型或加入新的模型。只需在 models/ 文件夹中实现新模型，并在 main.py 中注册即可。
 
-5. demo 演示
+### 6. demo 演示
 可执行以下命令：
 ```bash
 python main.py --mode predict_demo --model_checkpoint /path/to/model_checkpoint/
@@ -84,6 +99,9 @@ python main.py --mode predict_demo --model_checkpoint /path/to/model_checkpoint/
 预测的关系前五名是:
 ...
 ```
+
+## 扩展与自定义
+你可以根据需要扩展现有模型或加入新的模型。只需在 models/ 文件夹中实现新模型，并在 main.py 中注册即可。
 
 ## 项目参数解释
 - data_path: 数据文件路径，默认值为 dataset/raw/subgraph_kgp1.txt
