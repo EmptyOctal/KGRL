@@ -46,4 +46,4 @@ class TransR(nn.Module):
 
     def loss_function(self, positive_score, negative_score):
         # 基于 margin 的排名损失函数
-        torch.sum(F.relu(positive_score - negative_score + self.margin))
+        return torch.sum(F.relu(positive_score - negative_score + self.margin))
