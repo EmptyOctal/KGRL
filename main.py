@@ -14,9 +14,7 @@ import wandb
 
 def train(args):
     data_dir = "dataset/processed/"
-    data_module = DInterface(data_path=data_dir, 
-                             batch_size=args.batch_size, 
-                             num_workers=args.num_workers)
+    data_module = DInterface(data_path=data_dir, batch_size=args.batch_size, num_workers=args.num_workers)
     data_module.setup(stage='fit')
 
     model = MInterface(num_entities=data_module.num_entities,
@@ -31,7 +29,7 @@ def train(args):
     checkpoint_callback = ModelCheckpoint(monitor="val_loss", mode="min", save_top_k=1)
     early_stopping_callback = EarlyStopping(monitor="val_loss", patience=5, mode="min")
     # logger = CSVLogger("logs", name="transE")
-    wandb.init(project='KGRL')
+    wandb.init(project='KGRL', entity='octal-zhihao-zhou')
     # 创建 WandbLogger
     wandb_logger = WandbLogger()
     trainer = Trainer(max_epochs=args.max_epochs, 
@@ -72,7 +70,7 @@ def predict_demo(args):
         scores = []
         for relation, relation_id in relation2id.items():
             relation_tensor = torch.tensor([relation_id], dtype=torch.long).to(model.device)
-            score = model(head_tensor, relation_tensor, tail_tensor).item()
+            score = model(head_id, relation_id, tail_id).item()
             scores.append((relation, score))
         
         # 按分数排序并取前五个
@@ -87,7 +85,8 @@ def predict_demo(args):
         relation_id = relation2id[tail_or_relation]
         head_tensor = torch.tensor([head_id], dtype=torch.long).to(model.device)
         relation_tensor = torch.tensor([relation_id], dtype=torch.long).to(model.device)
-
+        print(relation_tensor)
+        print(head_tensor)
         scores = []
         for entity, entity_id in entity2id.items():
             tail_tensor = torch.tensor([entity_id], dtype=torch.long).to(model.device)
@@ -197,7 +196,7 @@ def predict(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type=str, default='dataset/raw/subgraph_kgp1.txt')
-    parser.add_argument('--batch_size', type=int, default=128)
+    parser.add_argument('--batch_size', type=int, default=256)
     parser.add_argument('--embedding_dim', type=int, default=100)
     parser.add_argument('--margin', type=float, default=1.0)
     parser.add_argument('--lr', type=float, default=0.0001)
@@ -219,7 +218,7 @@ if __name__ == '__main__':
     train(args)
 
     # 预测
-    # predict(args)
+    # predict_demo(args)
     # if args.is_train:
     #     train(args)
     # else:
