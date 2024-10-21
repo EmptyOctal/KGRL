@@ -6,7 +6,7 @@ from .transH_model import TransH
 from .transR_model import TransR
 
 class MInterface(LightningModule):
-    def __init__(self, num_entities, num_relations, embedding_dim, margin, lr, model_name='transE'):
+    def __init__(self, num_entities, num_relations, embedding_dim, margin, lr, model_name='transE', entity_dim=None, relation_dim=None):
         super(MInterface, self).__init__()
         
         if model_name == 'transE':
@@ -14,7 +14,10 @@ class MInterface(LightningModule):
         elif model_name == 'transH':
             self.model = TransH(num_entities, num_relations, embedding_dim, margin)
         elif model_name == 'transR':
-            self.model = TransR(num_entities, num_relations, embedding_dim, margin)
+            # 检查是否提供了 entity_dim 和 relation_dim
+            if entity_dim is None or relation_dim is None:
+                raise ValueError("For TransR, both entity_dim and relation_dim must be provided.")
+            self.model = TransR(num_entities, num_relations, entity_dim, relation_dim, margin)
         else:
             raise ValueError(f"Unsupported model_name: {model_name}")
         
