@@ -25,6 +25,8 @@ def train(args):
                        embedding_dim=args.embedding_dim,
                        entity_dim=args.entity_dim,
                        relation_dim=args.relation_dim,
+                       conv_channels=args.conv_channels,
+                       kernel_sizes=args.kernel_sizes,
                        margin=args.margin,
                        lr=args.lr,
                        model_name=args.model_name)
@@ -32,10 +34,9 @@ def train(args):
     model.to(device)
 
     checkpoint_callback = ModelCheckpoint(monitor="val_loss", mode="min", save_top_k=1)
-    early_stopping_callback = EarlyStopping(monitor="val_loss", patience=10, mode="min")
+    early_stopping_callback = EarlyStopping(monitor="val_loss", patience=5, mode="min")
     # logger = CSVLogger("logs", name="transE")
     wandb.init(project='KGRL', config=args)
-    # 创建 WandbLogger
     wandb_logger = WandbLogger()
     trainer = Trainer(max_epochs=args.max_epochs, 
                         callbacks=[checkpoint_callback, early_stopping_callback], 
@@ -53,6 +54,8 @@ def predict_demo(args):
                                             embedding_dim=args.embedding_dim,
                                             entity_dim=args.entity_dim,
                                             relation_dim=args.relation_dim,
+                                            conv_channels=args.conv_channels,
+                                            kernel_sizes=args.kernel_sizes,
                                             margin=args.margin,
                                             lr=args.lr,
                                             model_name=args.model_name)
@@ -129,6 +132,8 @@ def predict(args):
                                             embedding_dim=args.embedding_dim,
                                             entity_dim=args.entity_dim,
                                             relation_dim=args.relation_dim,
+                                            conv_channels=args.conv_channels,
+                                            kernel_sizes=args.kernel_sizes,
                                             margin=args.margin,
                                             lr=args.lr,
                                             model_name=args.model_name)
@@ -208,6 +213,8 @@ def predict(args):
 
     print("预测结果已保存到", args.output_json)
 
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type=str, default='dataset/raw/subgraph_kgp1.txt')
@@ -215,15 +222,17 @@ if __name__ == '__main__':
     parser.add_argument('--embedding_dim', type=int, default=100)
     parser.add_argument('--entity_dim', type=int, default=100) # 实体空间
     parser.add_argument('--relation_dim', type=int, default=50) # 关系空间
+    parser.add_argument('--conv_channels', type=int, default=32)
+    parser.add_argument('--kernel_sizes', type=int, nargs='+', default=[3, 5, 7])
     parser.add_argument('--margin', type=float, default=1.0)
     parser.add_argument('--lr', type=float, default=0.0001)
-    parser.add_argument('--max_epochs', type=int, default=100)
-    parser.add_argument('--model_checkpoint', type=str, default='lightning_logs/nzqohl8k/checkpoints/epoch=35-step=14436.ckpt')
+    parser.add_argument('--max_epochs', type=int, default=400)
+    parser.add_argument('--model_checkpoint', type=str, default='lightning_logs/a01dv004/checkpoints/epoch=12-step=6357.ckpt')
     parser.add_argument('--valid_json', type=str, default='dataset/subgraph_kgp1_valid.json')
     parser.add_argument('--output_json', type=str, default='dataset/subgraph_kgp1_output.json')
-    parser.add_argument('--num_workers', type=int, default=32)
+    parser.add_argument('--num_workers', type=int, default=8)
     parser.add_argument('--mode', type=str, default='train', choices=['train', 'predict', 'predict_demo'])
-    parser.add_argument('--model_name', type=str, default='transH', choices=['transE', 'transH', 'transR'])
+    parser.add_argument('--model_name', type=str, default='transH', choices=['transE', 'transH', 'transR', 'selectE'])
     parser.add_argument('--augment', type=bool, default=False)
 
     args = parser.parse_args()

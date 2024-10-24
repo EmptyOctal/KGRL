@@ -6,9 +6,12 @@ from utils.load import triplet_set
 from .transE_model import TransE
 from .transH_model import TransH
 from .transR_model import TransR
+from .selectE_model import SelectE
 
 class MInterface(LightningModule):
-    def __init__(self, num_entities, num_relations, embedding_dim, margin, lr, model_name='transE', entity_dim=None, relation_dim=None):
+    def __init__(self, num_entities, num_relations, embedding_dim, margin, lr, 
+                 model_name='transE', entity_dim=None, relation_dim=None,
+                 conv_channels=None, kernel_sizes=None):
         super(MInterface, self).__init__()
         
         if model_name == 'transE':
@@ -20,6 +23,11 @@ class MInterface(LightningModule):
             if entity_dim is None or relation_dim is None:
                 raise ValueError("For TransR, both entity_dim and relation_dim must be provided.")
             self.model = TransR(num_entities, num_relations, entity_dim, relation_dim, margin)
+        elif model_name == 'selectE':
+            # 检查是否提供了 conv_channels 和 kernel_sizes
+            if conv_channels is None or kernel_sizes is None:
+                raise ValueError("For SelectE, both conv_channels and kernel_sizes must be provided.")
+            self.model = SelectE(num_entities, num_relations, embedding_dim, conv_channels, kernel_sizes, margin)
         else:
             raise ValueError(f"Unsupported model_name: {model_name}")
         
@@ -43,7 +51,7 @@ class MInterface(LightningModule):
                         break
                 if flag:
                     break
-                    
+
         else:
             neg_head = head
             while True:
