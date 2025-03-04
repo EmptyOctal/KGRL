@@ -1,10 +1,10 @@
 # KGRL: 知识图谱表示学习
 
-KGRL 是一个基于 PyTorch Lightning 的知识图谱表示学习框架，支持 TransE、TransH、TransR 等多种模型。本项目提供了模块化的结构，便于研究不同的知识图谱嵌入方法，并进行链路预测（Link Prediction）和实体预测（Entity Prediction）等任务。
+KGRL 是一个基于 PyTorch Lightning 的知识图谱表示学习框架，支持 TransE、TransH、TransR、SelectE 等多种模型。本项目提供了模块化的结构，便于研究不同的知识图谱嵌入方法，并进行链路预测（Link Prediction）和实体预测（Entity Prediction）等任务。
 
 ## 项目优势
 - **模块化设计**：项目结构清晰，方便扩展和实验不同的嵌入方法以及使用不同的数据集。
-- **支持模型**：目前支持 TransE、TransH、TransR 三种经典模型，易于添加新的模型。
+- **支持模型**：目前支持 TransE、TransH、TransR、SelectE 四种经典模型，易于添加新的模型。
 - **任务支持**：包括链路预测和实体预测任务。
 
 
