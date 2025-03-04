@@ -1,7 +1,5 @@
 # KGRL: 知识图谱表示学习
 
-[github仓库地址](https://github.com/EmptyOctal/KGRL)
-
 KGRL 是一个基于 PyTorch Lightning 的知识图谱表示学习框架，支持 TransE、TransH、TransR 等多种模型。本项目提供了模块化的结构，便于研究不同的知识图谱嵌入方法，并进行链路预测（Link Prediction）和实体预测（Entity Prediction）等任务。
 
 ## 项目优势
@@ -31,6 +29,7 @@ KGRL/
 ├── models/   # 模型相关代码
 │   ├── __init__.py
 │   ├── model_interface.py
+│   ├── selectE_model.py
 │   ├── transE_model.py
 │   ├── transH_model.py
 │   └── transR_model.py
@@ -66,7 +65,7 @@ pip install -r requirements.txt
 - tqdm>=4.62
 
 ### 3. 数据准备
-将知识图谱数据文件放置于 data/raw/ 文件夹中。本项目支持以 .txt 格式存储的三元组数据，示例数据为subgraph_kgp1.txt。
+将知识图谱数据文件放置于 data/raw/ 文件夹中。本项目支持以 .txt 格式存储的三元组数据，示例数据为subgraph_kgp1.txt，数据集传送门：[GoogleDrive下载链接](https://drive.google.com/drive/folders/1sN04rVzAzysszhWvG-njMQmS0EINSXGW?usp=sharing)（该文件为课程项目所用数据集，源自于[DBpedia知识库](https://www.dbpedia.org/)，属于RDF格式的三元组数据）。
 运行代码后，会自动在 data/processed/ 目录下生成经过提取和数据增强后形成的txt文件，新生成的文件每一行表示一个`实体-关系-实体`的三元组关系。
 
 ### 4. 训练模型
